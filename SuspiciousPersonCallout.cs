@@ -14,7 +14,7 @@ namespace SuspiciousPersonCallout
     [CalloutProperties("SuspiciousPerson", "KTaps", "1.0.0", Probability.Medium)]
     public class SuspiciousPersonCallout : CalloutAPI.Callout
     {
-        Ped person;
+        Ped Suspect;
 
         public SuspiciousPersonCallout()
         {
@@ -28,7 +28,7 @@ namespace SuspiciousPersonCallout
             ShortName = "Suspicious Person";
             CalloutDescription = "Caller reported about a suspicious person walking around.";
             ResponseCode = 2;
-            StartDistance = 8f;
+            StartDistance = 40f;
         }
         public async override Task Init()
         {
@@ -37,12 +37,12 @@ namespace SuspiciousPersonCallout
             this.OnAccept();
 
             /* Use the SpawnPed or SpawnVehicle method to get a properly networked ped (react to other players) */
-            person = await SpawnPed(PedHash.FosRepCutscene, this.Location, 210);
+            Suspect = await SpawnPed(PedHash.FosRepCutscene, this.Location, 210);
 
-            person.Weapons.Give(WeaponHash.Pistol, 100, true, true);
+            Suspect.Weapons.Give(WeaponHash.Pistol, 100, false, true);
 
-            person.AlwaysKeepTask = true;
-            person.BlockPermanentEvents = true;
+            Suspect.AlwaysKeepTask = true;  // Have the Ped always keep task, no matter what happens around them
+            Suspect.BlockPermanentEvents = true;    // Prevent GTA V memory handling from deleting ped even when player is not near
         }
         public override void OnStart(Ped player)
         {
@@ -50,9 +50,32 @@ namespace SuspiciousPersonCallout
 
             base.OnStart(player); // -> to remove the blip from the map (yellow circle by default)
 
+            Suspect.AttachBlip();   // Attach a red player blip on map
+    
             // person.Task.FleeFrom(player); // Have Ped flee when player enters start position
 
-            person.Task.GoTo(new Vector3(1613.26f, 3593.69f, 35.15f));    // Have Ped Walk to position on map with cords
+            Suspect.Task.GoTo(new Vector3(1613.26f, 3593.69f, 35.15f));    // Have Ped Walk to position on map with cords
+
+            Vector3 currentLocation = Suspect.Position; // Get current ped position
+
+            Debug.WriteLine($"{currentLocation}");  // Output to Console
+
+            if (Suspect.IsInRangeOf(currentLocation, 100f))
+            {
+                Notify("~y~[Callout]: ~w~The suspect is near the go to");
+                Notify(currentLocation.ToString());
+            }
+            else
+            {
+                Notify("~y~[Callout]: ~w~The suspect is NOT near the go to");
+                Notify(currentLocation.ToString());
+            }
+        }
+        public void Notify(String message)
+        {
+            CitizenFX.Core.Native.API.BeginTextCommandThefeedPost("STRING");
+            CitizenFX.Core.Native.API.AddTextComponentSubstringPlayerName(message);
+            CitizenFX.Core.Native.API.EndTextCommandThefeedPostTicker(false, true);
         }
     }
 }
