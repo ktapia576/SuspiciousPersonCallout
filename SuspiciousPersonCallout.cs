@@ -14,7 +14,7 @@ namespace SuspiciousPersonCallout
     [CalloutProperties("SuspiciousPerson", "KTaps", "1.0.0", Probability.Medium)]
     public class SuspiciousPersonCallout : CalloutAPI.Callout
     {
-        Ped Suspect;
+        Ped suspect;
 
         public SuspiciousPersonCallout()
         {
@@ -33,16 +33,17 @@ namespace SuspiciousPersonCallout
         public async override Task Init()
         {
             /* Called when the callout is accepted */
+
             /* Blip spawn happens in base.OnAccept() */
             this.OnAccept();
 
             /* Use the SpawnPed or SpawnVehicle method to get a properly networked ped (react to other players) */
-            Suspect = await SpawnPed(PedHash.FosRepCutscene, this.Location, 210);
+            suspect = await SpawnPed(PedHash.FosRepCutscene, this.Location, 210);
 
-            Suspect.Weapons.Give(WeaponHash.Pistol, 100, false, true);
+            suspect.Weapons.Give(WeaponHash.Pistol, 100, false, true);
 
-            Suspect.AlwaysKeepTask = true;  // Have the Ped always keep task, no matter what happens around them
-            Suspect.BlockPermanentEvents = true;    // Prevent GTA V memory handling from deleting ped even when player is not near
+            suspect.AlwaysKeepTask = true;  // Have the Ped always keep task, no matter what happens around them
+            suspect.BlockPermanentEvents = true;    // Prevent GTA V memory handling from deleting ped even when player is not near
         }
         public override void OnStart(Ped player)
         {
@@ -50,17 +51,24 @@ namespace SuspiciousPersonCallout
 
             base.OnStart(player); // -> to remove the blip from the map (yellow circle by default)
 
-            Suspect.AttachBlip();   // Attach a red player blip on map
-    
+            suspect.AttachBlip();   // Attach a red player blip on map
+
             // person.Task.FleeFrom(player); // Have Ped flee when player enters start position
 
-            Suspect.Task.GoTo(new Vector3(1613.26f, 3593.69f, 35.15f));    // Have Ped Walk to position on map with cords
+            WalkTo(suspect, new Vector3(1613.26f, 3593.69f, 35.15f));
 
-            Vector3 currentLocation = Suspect.Position; // Get current ped position
+        }
+        private async void WalkTo(Ped ped, Vector3 location) 
+        {
+            ped.Task.GoTo(location);    // Have Ped Walk to position on map with cords
+
+            await BaseScript.Delay(5000);   // Wait five seconds (5000msecs = 5secs)
+
+            Vector3 currentLocation = ped.Position; // Get current ped position
 
             Debug.WriteLine($"{currentLocation}");  // Output to Console
 
-            if (Suspect.IsInRangeOf(currentLocation, 100f))
+            if (ped.IsInRangeOf(currentLocation, 100f))
             {
                 PrintNotification("~y~[Callout]: ~w~The suspect is near the go to");
                 PrintNotification(currentLocation.ToString());
@@ -71,13 +79,13 @@ namespace SuspiciousPersonCallout
                 PrintNotification(currentLocation.ToString());
             }
         }
-        public void PrintNotification(String message)
+        private void PrintNotification(String message)
         {
             BeginTextCommandThefeedPost("STRING");
             AddTextComponentSubstringPlayerName(message);
             EndTextCommandThefeedPostTicker(false, true);
         }
-        public void PrintSubtitle(String message, int duration)
+        private void PrintSubtitle(String message, int duration)
         {
             BeginTextCommandPrint("STRING");
             AddTextComponentSubstringPlayerName(message);
