@@ -62,20 +62,26 @@ namespace SuspiciousPersonCallout
 
             if (Suspect.IsInRangeOf(currentLocation, 100f))
             {
-                Notify("~y~[Callout]: ~w~The suspect is near the go to");
-                Notify(currentLocation.ToString());
+                PrintNotification("~y~[Callout]: ~w~The suspect is near the go to");
+                PrintNotification(currentLocation.ToString());
             }
             else
             {
-                Notify("~y~[Callout]: ~w~The suspect is NOT near the go to");
-                Notify(currentLocation.ToString());
+                PrintNotification("~y~[Callout]: ~w~The suspect is NOT near the go to");
+                PrintNotification(currentLocation.ToString());
             }
         }
-        public void Notify(String message)
+        public void PrintNotification(String message)
         {
-            CitizenFX.Core.Native.API.BeginTextCommandThefeedPost("STRING");
-            CitizenFX.Core.Native.API.AddTextComponentSubstringPlayerName(message);
-            CitizenFX.Core.Native.API.EndTextCommandThefeedPostTicker(false, true);
+            BeginTextCommandThefeedPost("STRING");
+            AddTextComponentSubstringPlayerName(message);
+            EndTextCommandThefeedPostTicker(false, true);
+        }
+        public void PrintSubtitle(String message, int duration)
+        {
+            BeginTextCommandPrint("STRING");
+            AddTextComponentSubstringPlayerName(message);
+            EndTextCommandPrint(duration, false);
         }
     }
 }
