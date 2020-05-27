@@ -18,10 +18,10 @@ namespace SuspiciousPersonCallout
         Vector3 shackSandyShoresLocation = new Vector3(1573.99f, 3680.99f, 34.77f);
         Vector3 shackSandyShoresWalkToLocation = new Vector3(1574.93f, 3704.61f, 34.38f);
 
+        Random rand = new Random();
+
         public SuspiciousPersonCallout()
         {
-            //Random rnd = new Random();
-
             InitBase(shackSandyShoresLocation);
 
             ShortName = "Suspicious Person";
@@ -57,22 +57,46 @@ namespace SuspiciousPersonCallout
 
             StartScene(suspect, shackSandyShoresWalkToLocation);
         }
-        private async void StartScene(Ped suspect, Vector3 location) 
+        private async void StartScene(Ped ped, Vector3 location) 
         {
             await BaseScript.Delay(6000);   // Wait for player to reach close to location
 
-            suspect.Task.GoTo(location);    // Have Ped Walk to position on map with cords
+            ped.Task.GoTo(location);    // Have Ped Walk to position on map with cords
 
+            ped.Task.UseMobilePhone();
+     
             await BaseScript.Delay(15000);   // Wait X milliseconds (5000msecs = 5secs)
 
             // Vector3 currentLocation = suspect.Position; // Get current ped position
 
-            // Debug.WriteLine($"{currentLocation}");  // Output to Console
-
             PrintSubtitle("Hey officer, why would you be here?", 2000);
             await BaseScript.Delay(2000);   // Wait 2 seconds and then run to give player time to read
 
-            suspect.Task.FleeFrom(Game.PlayerPed); // Have Ped flee from player
+            int number = rand.Next(101); // random integers between 0 and 100
+
+            /* Randomize outcome */
+            if (number >= 50)
+            {
+                Flee(ped);
+            }
+            else if (number < 50)
+            {
+                Attack(ped);
+            }
+            else 
+            {
+                Debug.WriteLine("Something went wrong with randomizing outcome.");  // Output to F8 Console
+            }
+        }
+        private void Flee(Ped ped) 
+        {
+            ped.Task.FleeFrom(Game.PlayerPed);  // Have Ped flee from player
+            Debug.WriteLine("Fleeing");  // Output to F8 Console
+        }
+        private void Attack(Ped ped) 
+        {
+            ped.Task.ShootAt(Game.PlayerPed);   // Have ped attack player
+            Debug.WriteLine("Attacking");  // Output to F8 Console
         }
         private void PrintNotification(String message)
         {
