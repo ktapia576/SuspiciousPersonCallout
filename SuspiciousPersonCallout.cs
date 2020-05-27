@@ -15,20 +15,19 @@ namespace SuspiciousPersonCallout
     public class SuspiciousPersonCallout : CalloutAPI.Callout
     {
         Ped suspect;
+        Vector3 shackSandyShoresLocation = new Vector3(1573.99f, 3680.99f, 34.77f);
+        Vector3 shackSandyShoresWalkToLocation = new Vector3(1574.93f, 3704.61f, 34.38f);
 
         public SuspiciousPersonCallout()
         {
             //Random rnd = new Random();
 
-            Vector3 spawnLocation = new Vector3(1585.8f, 3646.41f, 34.52f);
-
-            InitBase(spawnLocation);
-
+            InitBase(shackSandyShoresLocation);
 
             ShortName = "Suspicious Person";
             CalloutDescription = "Caller reported about a suspicious person walking around.";
             ResponseCode = 2;
-            StartDistance = 40f;
+            StartDistance = 100f;
         }
         public async override Task Init()
         {
@@ -37,8 +36,11 @@ namespace SuspiciousPersonCallout
             /* Blip spawn happens in base.OnAccept() */
             this.OnAccept();
 
+            /* Dispatch notifies player of situation */
+            PrintNotification("~g~[Dispatch]: ~w~There are reports of someone trespassing into an abandoned building");
+
             /* Use the SpawnPed or SpawnVehicle method to get a properly networked ped (react to other players) */
-            suspect = await SpawnPed(PedHash.FosRepCutscene, this.Location, 210);
+            suspect = await SpawnPed(PedHash.FosRepCutscene, shackSandyShoresLocation, 32.82f);
 
             suspect.Weapons.Give(WeaponHash.Pistol, 100, false, true);
 
@@ -53,31 +55,24 @@ namespace SuspiciousPersonCallout
 
             suspect.AttachBlip();   // Attach a red player blip on map
 
-            // person.Task.FleeFrom(player); // Have Ped flee when player enters start position
-
-            WalkTo(suspect, new Vector3(1613.26f, 3593.69f, 35.15f));
-
+            StartScene(suspect, shackSandyShoresWalkToLocation);
         }
-        private async void WalkTo(Ped ped, Vector3 location) 
+        private async void StartScene(Ped suspect, Vector3 location) 
         {
-            ped.Task.GoTo(location);    // Have Ped Walk to position on map with cords
+            await BaseScript.Delay(6000);   // Wait for player to reach close to location
 
-            await BaseScript.Delay(5000);   // Wait five seconds (5000msecs = 5secs)
+            suspect.Task.GoTo(location);    // Have Ped Walk to position on map with cords
 
-            Vector3 currentLocation = ped.Position; // Get current ped position
+            await BaseScript.Delay(15000);   // Wait X milliseconds (5000msecs = 5secs)
 
-            Debug.WriteLine($"{currentLocation}");  // Output to Console
+            // Vector3 currentLocation = suspect.Position; // Get current ped position
 
-            if (ped.IsInRangeOf(currentLocation, 100f))
-            {
-                PrintNotification("~y~[Callout]: ~w~The suspect is near the go to");
-                PrintNotification(currentLocation.ToString());
-            }
-            else
-            {
-                PrintNotification("~y~[Callout]: ~w~The suspect is NOT near the go to");
-                PrintNotification(currentLocation.ToString());
-            }
+            // Debug.WriteLine($"{currentLocation}");  // Output to Console
+
+            PrintSubtitle("Hey officer, why would you be here?", 2000);
+            await BaseScript.Delay(2000);   // Wait 2 seconds and then run to give player time to read
+
+            suspect.Task.FleeFrom(Game.PlayerPed); // Have Ped flee from player
         }
         private void PrintNotification(String message)
         {
