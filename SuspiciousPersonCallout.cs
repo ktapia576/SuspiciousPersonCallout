@@ -56,8 +56,6 @@ namespace SuspiciousPersonCallout
 
             suspect.AttachBlip();   // Attach a red player blip on map
 
-            PrintNotification("~y~[Callout]: ~w~Once you see the Ped, wait for them to stop walking and initate contact");
-
             StartScene(suspect, shackSandyShoresWalkToLocation);
         }
         private async void StartScene(Ped ped, Vector3 location) 
@@ -65,14 +63,20 @@ namespace SuspiciousPersonCallout
             await BaseScript.Delay(6000);   // Wait for player to reach close to location
 
             ped.Task.GoTo(location);    // Have Ped Walk to position on map with cords
-     
-            await BaseScript.Delay(10000);   // Wait X milliseconds (5000msecs = 5secs)
 
+            /* Wait for ped to get near then initiate contact*/
+            while(!Game.PlayerPed.IsInRangeOf(ped.Position, 8f)) 
+            {
+                await BaseScript.Delay(1000);
+            }
+     
             ped.Task.TurnTo(Game.PlayerPed);
+            await BaseScript.Delay(1000);
 
             // Vector3 currentLocation = suspect.Position; // Get current ped position
 
-            PrintSubtitle("Hey officer, why would you be here?", 2000);
+            PrintSubtitle("Hey officer", 2000);
+            PrintSubtitle("Am I being detained?", 2000);
             await BaseScript.Delay(6000);   // Wait 6 seconds and then run to give player time to stop ped
 
             int number = rand.Next(101); // random integers between 0 and 100
@@ -112,9 +116,9 @@ namespace SuspiciousPersonCallout
             String statement = RandomizeStatements(postActionStatements);   // Receive random statement
             PrintSubtitle(statement, 2000);
 
-            await BaseScript.Delay(6500);   // Wait till behind the house
+            await BaseScript.Delay(5000);   // Wait till behind the house
 
-            ped.Task.ShootAt(Game.PlayerPed);   // Have ped attack player
+            ped.Task.FightAgainst(Game.PlayerPed);
             Debug.WriteLine("Attacking");  // Output to F8 Console
         }
         private String RandomizeStatements(String[] array) 
