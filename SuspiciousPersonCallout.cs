@@ -16,10 +16,11 @@ namespace SuspiciousPersonCallout
     {
         Ped suspect;
         Vector3 shackSandyShoresLocation = new Vector3(1573.99f, 3680.99f, 34.77f);
-        Vector3 shackSandyShoresWalkToLocation = new Vector3(1574.93f, 3704.61f, 34.38f);
+        Vector3 shackSandyShoresWalkToLocation = new Vector3(1570.22f, 3696.93f, 34.3f);
 
-        Random rand = new Random();
+        readonly Random rand = new Random();
 
+        readonly string[] postActionStatements = { "Officer, I've done nothing wrong!", "Fuck the police!"};
         public SuspiciousPersonCallout()
         {
             InitBase(shackSandyShoresLocation);
@@ -55,6 +56,8 @@ namespace SuspiciousPersonCallout
 
             suspect.AttachBlip();   // Attach a red player blip on map
 
+            PrintNotification("~y~[Callout]: ~w~Once you see the Ped, wait for them to stop walking and initate contact");
+
             StartScene(suspect, shackSandyShoresWalkToLocation);
         }
         private async void StartScene(Ped ped, Vector3 location) 
@@ -62,15 +65,15 @@ namespace SuspiciousPersonCallout
             await BaseScript.Delay(6000);   // Wait for player to reach close to location
 
             ped.Task.GoTo(location);    // Have Ped Walk to position on map with cords
-
-            ped.Task.UseMobilePhone();
      
-            await BaseScript.Delay(15000);   // Wait X milliseconds (5000msecs = 5secs)
+            await BaseScript.Delay(10000);   // Wait X milliseconds (5000msecs = 5secs)
+
+            ped.Task.TurnTo(Game.PlayerPed);
 
             // Vector3 currentLocation = suspect.Position; // Get current ped position
 
             PrintSubtitle("Hey officer, why would you be here?", 2000);
-            await BaseScript.Delay(2000);   // Wait 2 seconds and then run to give player time to read
+            await BaseScript.Delay(6000);   // Wait 6 seconds and then run to give player time to stop ped
 
             int number = rand.Next(101); // random integers between 0 and 100
 
@@ -88,15 +91,36 @@ namespace SuspiciousPersonCallout
                 Debug.WriteLine("Something went wrong with randomizing outcome.");  // Output to F8 Console
             }
         }
-        private void Flee(Ped ped) 
+        private async void Flee(Ped ped) 
         {
             ped.Task.FleeFrom(Game.PlayerPed);  // Have Ped flee from player
             Debug.WriteLine("Fleeing");  // Output to F8 Console
+
+            await BaseScript.Delay(1000);   // Wait a little after action
+
+            String statement = RandomizeStatements(postActionStatements);   // Receive random statement
+            PrintSubtitle(statement,2000);
         }
-        private void Attack(Ped ped) 
+        private async void Attack(Ped ped) 
         {
+            Vector3 behindHouse = new Vector3(1531.57f, 3706.08f, 34.69f);
+
+            ped.Task.RunTo(behindHouse);
+
+            await BaseScript.Delay(1500);   // Wait a little after action
+
+            String statement = RandomizeStatements(postActionStatements);   // Receive random statement
+            PrintSubtitle(statement, 2000);
+
+            await BaseScript.Delay(6500);   // Wait till behind the house
+
             ped.Task.ShootAt(Game.PlayerPed);   // Have ped attack player
             Debug.WriteLine("Attacking");  // Output to F8 Console
+        }
+        private String RandomizeStatements(String[] array) 
+        {
+            int index = rand.Next(array.Length);
+            return array[index];
         }
         private void PrintNotification(String message)
         {
