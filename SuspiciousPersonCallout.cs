@@ -82,15 +82,23 @@ namespace SuspiciousPersonCallout
             int number = rand.Next(101); // random integers between 0 and 100
 
             /* Randomize outcome */
-            if (number >= 50)
+            if (number >= 75)
             {
                 Flee(ped);
             }
-            else if (number < 50)
+            else if (number >= 50)
+            {
+                FleeThenAttack(ped);
+            }
+            else if (number >= 25) 
             {
                 Attack(ped);
             }
-            else 
+            else if (number >= 0)
+            {
+                Comply(ped);
+            }
+            else
             {
                 Debug.WriteLine("Something went wrong with randomizing outcome.");  // Output to F8 Console
             }
@@ -105,11 +113,9 @@ namespace SuspiciousPersonCallout
             String statement = RandomizeStatements(postActionStatements);   // Receive random statement
             PrintSubtitle(statement,2000);
         }
-        private async void Attack(Ped ped) 
+        private async void FleeThenAttack(Ped ped) 
         {
-            Vector3 behindHouse = new Vector3(1531.57f, 3706.08f, 34.69f);
-
-            ped.Task.RunTo(behindHouse);
+            ped.Task.FleeFrom(Game.PlayerPed);
 
             await BaseScript.Delay(1500);   // Wait a little after action
 
@@ -119,7 +125,25 @@ namespace SuspiciousPersonCallout
             await BaseScript.Delay(5000);   // Wait till behind the house
 
             ped.Task.FightAgainst(Game.PlayerPed);
+            Debug.WriteLine("Fleeing and then Attacking");  // Output to F8 Console
+        }
+        private async void Attack(Ped ped) 
+        {
+            String statement = RandomizeStatements(postActionStatements);   // Receive random statement
+            PrintSubtitle(statement, 2000);
+
+            await BaseScript.Delay(2500);   // Wait a little after statement
+
+            ped.Task.FightAgainst(Game.PlayerPed);
+
             Debug.WriteLine("Attacking");  // Output to F8 Console
+        }
+        private void Comply(Ped ped) 
+        {
+            String statement = RandomizeStatements(postActionStatements);   // Receive random statement
+            PrintSubtitle(statement, 2000);
+
+            Debug.WriteLine("Complying");  // Output to F8 Console
         }
         private String RandomizeStatements(String[] array) 
         {
