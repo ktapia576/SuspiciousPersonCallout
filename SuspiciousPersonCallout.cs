@@ -21,6 +21,8 @@ namespace SuspiciousPersonCallout
         readonly Random rand = new Random();
 
         readonly string[] postActionStatements = { "Officer, I've done nothing wrong!", "Fuck the police!"};
+        readonly WeaponHash[] weapons = { WeaponHash.Knife, WeaponHash.Pistol, WeaponHash.Machete, WeaponHash.Unarmed, WeaponHash.PumpShotgun};
+
         public SuspiciousPersonCallout()
         {
             InitBase(shackSandyShoresLocation);
@@ -43,7 +45,9 @@ namespace SuspiciousPersonCallout
             /* Use the SpawnPed or SpawnVehicle method to get a properly networked ped (react to other players) */
             suspect = await SpawnPed(PedHash.FosRepCutscene, shackSandyShoresLocation, 32.82f);
 
-            suspect.Weapons.Give(WeaponHash.Pistol, 100, false, true);
+            WeaponHash weapon = RandomizeWeapon(weapons);   // Get random weapon
+
+            suspect.Weapons.Give(weapon, 100, false, true);     // Give weapon unholstered
 
             suspect.AlwaysKeepTask = true;  // Have the Ped always keep task, no matter what happens around them
             suspect.BlockPermanentEvents = true;    // Prevent GTA V memory handling from deleting ped even when player is not near
@@ -146,6 +150,11 @@ namespace SuspiciousPersonCallout
             Debug.WriteLine("Complying");  // Output to F8 Console
         }
         private String RandomizeStatements(String[] array) 
+        {
+            int index = rand.Next(array.Length);
+            return array[index];
+        }
+        private WeaponHash RandomizeWeapon(WeaponHash[] array) 
         {
             int index = rand.Next(array.Length);
             return array[index];
