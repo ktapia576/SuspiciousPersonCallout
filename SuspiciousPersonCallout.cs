@@ -15,8 +15,14 @@ namespace SuspiciousPersonCallout
     public class SuspiciousPersonCallout : CalloutAPI.Callout
     {
         Ped suspect;
-        Vector3 shackSandyShoresLocation = new Vector3(1704.28f, 3845.39f, 34.94f);
-        Vector3 shackSandyShoresRunToLocation = new Vector3(1709.09f, 3832.57f, 34.99f);
+        Vector3 selectedSpawnLocation;
+        Vector3 selectedRunToLocation;
+
+        readonly Vector3 shackSandyShoresLocation = new Vector3(1704.28f, 3845.39f, 34.94f);
+        readonly Vector3 shackSandyShoresRunToLocation = new Vector3(1709.09f, 3832.57f, 34.99f);
+
+        readonly Vector3 complexSandyShoresLocation = new Vector3(1545.45f, 3592.52f, 35.45f);
+        readonly Vector3 complexSandyShoresRunToLocation = new Vector3(1529.04f, 3592.92f, 35.41f);
 
         readonly Random rand = new Random();
 
@@ -25,7 +31,10 @@ namespace SuspiciousPersonCallout
 
         public SuspiciousPersonCallout()
         {
-            InitBase(shackSandyShoresLocation);
+
+            RandomizeSpawn();
+
+            InitBase(selectedSpawnLocation);
 
             ShortName = "Suspicious Person";
             CalloutDescription = "Caller reported about a suspicious person walking around.";
@@ -42,8 +51,9 @@ namespace SuspiciousPersonCallout
             /* Dispatch notifies player of situation */
             PrintNotification("~g~[Dispatch]: ~w~There are reports of a suspicious person trespassing into an abandoned building");
 
+
             /* Use the SpawnPed or SpawnVehicle method to get a properly networked ped (react to other players) */
-            suspect = await SpawnPed(PedHash.ChiCold01GMM, shackSandyShoresLocation, 265.39f);
+            suspect = await SpawnPed(PedHash.ChiCold01GMM, selectedSpawnLocation, 300f);
 
             WeaponHash weapon = RandomizeWeapon(weapons);   // Get random weapon
 
@@ -60,13 +70,13 @@ namespace SuspiciousPersonCallout
 
             suspect.AttachBlip();   // Attach a red player blip on map
 
-            StartScene(suspect, shackSandyShoresRunToLocation);
+            StartScene(suspect, selectedRunToLocation);
         }
         private async void StartScene(Ped ped, Vector3 location) 
         {
             await BaseScript.Delay(6000);   // Wait for player to reach close to location
 
-            ped.Task.RunTo(location);    // Have Ped Walk to position on map with cords
+            ped.Task.RunTo(location);    // Have Ped Run to position on map with cords
 
             await BaseScript.Delay(3000);
 
@@ -160,6 +170,26 @@ namespace SuspiciousPersonCallout
             PrintSubtitle(statement, 2000);
 
             Debug.WriteLine("Complying");  // Output to F8 Console
+        }
+        private void RandomizeSpawn() 
+        {
+            /* Randomize spawn location */
+            int number = rand.Next(101); // random integers between 0 and 100
+
+            if (number >= 50)
+            {
+                selectedSpawnLocation = shackSandyShoresLocation;
+                selectedRunToLocation = shackSandyShoresRunToLocation;
+            }
+            else if (number >= 0)
+            {
+                selectedSpawnLocation = complexSandyShoresLocation;
+                selectedRunToLocation = complexSandyShoresRunToLocation;
+            }
+            else
+            {
+                Debug.WriteLine("Something went wrong with randomizing spawn. Could not set spawnIndex int");  // Output to F8 Console
+            }
         }
         private String RandomizeStatements(String[] array) 
         {
