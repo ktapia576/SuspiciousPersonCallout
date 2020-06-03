@@ -26,7 +26,7 @@ namespace SuspiciousPersonCallout
 
         readonly Random rand = new Random();
 
-        readonly string[] postActionStatements = { "~y~Officer, I've done nothing wrong!", "~y~Fuck the police!" };
+        readonly string[] postActionStatements = { "~r~[Suspect] Officer, I've done nothing wrong!", "~r~[Suspect] Fuck the police!" };
         readonly WeaponHash[] weapons = { WeaponHash.Knife, WeaponHash.Pistol, WeaponHash.Machete, WeaponHash.Unarmed, WeaponHash.PumpShotgun};
 
         public SuspiciousPersonCallout()
@@ -89,9 +89,9 @@ namespace SuspiciousPersonCallout
             suspect.Task.TurnTo(Game.PlayerPed);
             await BaseScript.Delay(1000);
 
-            PrintSubtitle("~y~Hey officer", 2000);
+            PrintSubtitle("~r~[Suspect] Hey officer", 2000);
             await BaseScript.Delay(2000);
-            PrintSubtitle("~y~Why are you stopping me?", 2000);
+            PrintSubtitle("~r~[Suspect] Why are you stopping me?", 2000);
             await BaseScript.Delay(6000);   // Wait 6 seconds and then do action to give player time to stop ped
 
             int number = rand.Next(101); // random integers between 0 and 100
