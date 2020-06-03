@@ -20,7 +20,7 @@ namespace SuspiciousPersonCallout
 
         readonly Random rand = new Random();
 
-        readonly string[] postActionStatements = { "Officer, I've done nothing wrong!", "Fuck the police!"};
+        readonly string[] postActionStatements = { "~y~Officer, I've done nothing wrong!", "~y~Fuck the police!" };
         readonly WeaponHash[] weapons = { WeaponHash.Knife, WeaponHash.Pistol, WeaponHash.Machete, WeaponHash.Unarmed, WeaponHash.PumpShotgun};
 
         public SuspiciousPersonCallout()
@@ -79,8 +79,8 @@ namespace SuspiciousPersonCallout
 
             // Vector3 currentLocation = suspect.Position; // Get current ped position
 
-            PrintSubtitle("Hey officer", 2000);
-            PrintSubtitle("Am I being detained?", 2000);
+            PrintSubtitle("~y~Hey officer", 2000);
+            PrintSubtitle("~y~Am I being detained?", 2000);
             await BaseScript.Delay(6000);   // Wait 6 seconds and then run to give player time to stop ped
 
             int number = rand.Next(101); // random integers between 0 and 100
