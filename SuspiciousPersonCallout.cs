@@ -107,6 +107,13 @@ namespace SuspiciousPersonCallout
                 Debug.WriteLine("Something went wrong with randomizing outcome.");  // Output to F8 Console
             }
         }
+        public override void OnCancelBefore()
+        {
+            if (suspect.IsAlive)
+            {
+                suspect.Task.WanderAround();
+            }
+        }
         private async void Flee(Ped ped) 
         {
             ped.Task.FleeFrom(Game.PlayerPed);  // Have Ped flee from player
