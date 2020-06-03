@@ -31,7 +31,6 @@ namespace SuspiciousPersonCallout
 
         public SuspiciousPersonCallout()
         {
-
             RandomizeSpawn();
 
             InitBase(selectedSpawnLocation);
@@ -51,7 +50,6 @@ namespace SuspiciousPersonCallout
             /* Dispatch notifies player of situation */
             PrintNotification("~g~[Dispatch]: ~w~There are reports of a suspicious person trespassing into an abandoned building");
 
-
             /* Use the SpawnPed or SpawnVehicle method to get a properly networked ped (react to other players) */
             suspect = await SpawnPed(PedHash.ChiCold01GMM, selectedSpawnLocation, 300f);
 
@@ -70,28 +68,26 @@ namespace SuspiciousPersonCallout
 
             suspect.AttachBlip();   // Attach a red player blip on map
 
-            StartScene(suspect, selectedRunToLocation);
+            StartScene();
         }
-        private async void StartScene(Ped ped, Vector3 location) 
+        private async void StartScene() 
         {
             await BaseScript.Delay(6000);   // Wait for player to reach close to location
 
-            ped.Task.RunTo(location);    // Have Ped Run to position on map with cords
+            suspect.Task.RunTo(selectedRunToLocation);    // Have Ped Run to position on map with cords
 
             await BaseScript.Delay(3000);
 
-            ped.Task.WanderAround();
+            suspect.Task.WanderAround();
 
             /* Wait for ped to get near then initiate contact*/
-            while (!Game.PlayerPed.IsInRangeOf(ped.Position, 8f)) 
+            while (!Game.PlayerPed.IsInRangeOf(suspect.Position, 8f)) 
             {
                 await BaseScript.Delay(1000);
             }
      
-            ped.Task.TurnTo(Game.PlayerPed);
+            suspect.Task.TurnTo(Game.PlayerPed);
             await BaseScript.Delay(1000);
-
-            // Vector3 currentLocation = suspect.Position; // Get current ped position
 
             PrintSubtitle("~y~Hey officer", 2000);
             await BaseScript.Delay(2000);
@@ -103,19 +99,19 @@ namespace SuspiciousPersonCallout
             /* Randomize outcome */
             if (number >= 75)
             {
-                Flee(ped);
+                Flee();
             }
             else if (number >= 50)
             {
-                FleeThenAttack(ped);
+                FleeThenAttack();
             }
             else if (number >= 25) 
             {
-                Attack(ped);
+                Attack();
             }
             else if (number >= 0)
             {
-                Comply(ped);
+                Comply();
             }
             else
             {
@@ -129,19 +125,18 @@ namespace SuspiciousPersonCallout
                 suspect.Task.WanderAround();
             }
         }
-        private async void Flee(Ped ped) 
+        private async void Flee() 
         {
-            ped.Task.FleeFrom(Game.PlayerPed);  // Have Ped flee from player
-            Debug.WriteLine("Fleeing");  // Output to F8 Console
+            suspect.Task.FleeFrom(Game.PlayerPed);  // Have Ped flee from player
 
             await BaseScript.Delay(1000);   // Wait a little after action
 
             String statement = RandomizeStatements(postActionStatements);   // Receive random statement
             PrintSubtitle(statement,2000);
         }
-        private async void FleeThenAttack(Ped ped) 
+        private async void FleeThenAttack() 
         {
-            ped.Task.FleeFrom(Game.PlayerPed);
+            suspect.Task.FleeFrom(Game.PlayerPed);
 
             await BaseScript.Delay(1500);   // Wait a little after action
 
@@ -150,26 +145,21 @@ namespace SuspiciousPersonCallout
 
             await BaseScript.Delay(5000);   // Wait till behind the house
 
-            ped.Task.FightAgainst(Game.PlayerPed);
-            Debug.WriteLine("Fleeing and then Attacking");  // Output to F8 Console
+            suspect.Task.FightAgainst(Game.PlayerPed);
         }
-        private async void Attack(Ped ped) 
+        private async void Attack() 
         {
             String statement = RandomizeStatements(postActionStatements);   // Receive random statement
             PrintSubtitle(statement, 2000);
 
             await BaseScript.Delay(2500);   // Wait a little after statement
 
-            ped.Task.FightAgainst(Game.PlayerPed);
-
-            Debug.WriteLine("Attacking");  // Output to F8 Console
+            suspect.Task.FightAgainst(Game.PlayerPed);
         }
-        private void Comply(Ped ped) 
+        private void Comply() 
         {
             String statement = RandomizeStatements(postActionStatements);   // Receive random statement
             PrintSubtitle(statement, 2000);
-
-            Debug.WriteLine("Complying");  // Output to F8 Console
         }
         private void RandomizeSpawn() 
         {
@@ -188,7 +178,7 @@ namespace SuspiciousPersonCallout
             }
             else
             {
-                Debug.WriteLine("Something went wrong with randomizing spawn. Could not set spawnIndex int");  // Output to F8 Console
+                Debug.WriteLine("Something went wrong with randomizing spawn.");  // Output to F8 Console
             }
         }
         private String RandomizeStatements(String[] array) 
