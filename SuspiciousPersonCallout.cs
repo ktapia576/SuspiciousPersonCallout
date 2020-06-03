@@ -15,8 +15,8 @@ namespace SuspiciousPersonCallout
     public class SuspiciousPersonCallout : CalloutAPI.Callout
     {
         Ped suspect;
-        Vector3 shackSandyShoresLocation = new Vector3(1573.99f, 3680.99f, 34.77f);
-        Vector3 shackSandyShoresWalkToLocation = new Vector3(1570.22f, 3696.93f, 34.3f);
+        Vector3 shackSandyShoresLocation = new Vector3(1704.28f, 3845.39f, 34.94f);
+        Vector3 shackSandyShoresRunToLocation = new Vector3(1709.09f, 3832.57f, 34.99f);
 
         readonly Random rand = new Random();
 
@@ -43,7 +43,7 @@ namespace SuspiciousPersonCallout
             PrintNotification("~g~[Dispatch]: ~w~There are reports of a suspicious person trespassing into an abandoned building");
 
             /* Use the SpawnPed or SpawnVehicle method to get a properly networked ped (react to other players) */
-            suspect = await SpawnPed(PedHash.ChiCold01GMM, shackSandyShoresLocation, 32.82f);
+            suspect = await SpawnPed(PedHash.ChiCold01GMM, shackSandyShoresLocation, 265.39f);
 
             WeaponHash weapon = RandomizeWeapon(weapons);   // Get random weapon
 
@@ -60,16 +60,20 @@ namespace SuspiciousPersonCallout
 
             suspect.AttachBlip();   // Attach a red player blip on map
 
-            StartScene(suspect, shackSandyShoresWalkToLocation);
+            StartScene(suspect, shackSandyShoresRunToLocation);
         }
         private async void StartScene(Ped ped, Vector3 location) 
         {
             await BaseScript.Delay(6000);   // Wait for player to reach close to location
 
-            ped.Task.GoTo(location);    // Have Ped Walk to position on map with cords
+            ped.Task.RunTo(location);    // Have Ped Walk to position on map with cords
+
+            await BaseScript.Delay(3000);
+
+            ped.Task.WanderAround();
 
             /* Wait for ped to get near then initiate contact*/
-            while(!Game.PlayerPed.IsInRangeOf(ped.Position, 8f)) 
+            while (!Game.PlayerPed.IsInRangeOf(ped.Position, 8f)) 
             {
                 await BaseScript.Delay(1000);
             }
@@ -80,7 +84,8 @@ namespace SuspiciousPersonCallout
             // Vector3 currentLocation = suspect.Position; // Get current ped position
 
             PrintSubtitle("~y~Hey officer", 2000);
-            PrintSubtitle("~y~I'm only wearing this mask because it's cold", 2000);
+            await BaseScript.Delay(2000);
+            PrintSubtitle("~y~Why are you stopping me?", 2000);
             await BaseScript.Delay(6000);   // Wait 6 seconds and then do action to give player time to stop ped
 
             int number = rand.Next(101); // random integers between 0 and 100
