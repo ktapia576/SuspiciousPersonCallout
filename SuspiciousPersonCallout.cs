@@ -40,10 +40,10 @@ namespace SuspiciousPersonCallout
             this.OnAccept();
 
             /* Dispatch notifies player of situation */
-            PrintNotification("~g~[Dispatch]: ~w~There are reports of someone trespassing into an abandoned building");
+            PrintNotification("~g~[Dispatch]: ~w~There are reports of a suspicious person trespassing into an abandoned building");
 
             /* Use the SpawnPed or SpawnVehicle method to get a properly networked ped (react to other players) */
-            suspect = await SpawnPed(PedHash.FosRepCutscene, shackSandyShoresLocation, 32.82f);
+            suspect = await SpawnPed(PedHash.ChiCold01GMM, shackSandyShoresLocation, 32.82f);
 
             WeaponHash weapon = RandomizeWeapon(weapons);   // Get random weapon
 
@@ -80,8 +80,8 @@ namespace SuspiciousPersonCallout
             // Vector3 currentLocation = suspect.Position; // Get current ped position
 
             PrintSubtitle("~y~Hey officer", 2000);
-            PrintSubtitle("~y~Am I being detained?", 2000);
-            await BaseScript.Delay(6000);   // Wait 6 seconds and then run to give player time to stop ped
+            PrintSubtitle("~y~I'm only wearing this mask because it's cold", 2000);
+            await BaseScript.Delay(6000);   // Wait 6 seconds and then do action to give player time to stop ped
 
             int number = rand.Next(101); // random integers between 0 and 100
 
