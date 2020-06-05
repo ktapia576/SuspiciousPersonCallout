@@ -11,7 +11,7 @@ using System.Runtime.InteropServices;
 namespace SuspiciousPersonCallout
 {
     [GuidAttribute("24b727e4-697a-462c-b7ab-d38c6e4c5b67")]
-    [CalloutProperties("SuspiciousPerson", "KTaps", "1.0.0", Probability.Medium)]
+    [CalloutProperties("SuspiciousPerson", "KTaps", "0.0.1", Probability.Medium)]
     public class SuspiciousPersonCallout : CalloutAPI.Callout
     {
         Ped suspect;
@@ -26,7 +26,7 @@ namespace SuspiciousPersonCallout
 
         readonly Random rand = new Random();
 
-        readonly string[] postActionStatements = { "~r~[Suspect] Officer, I've done nothing wrong!", "~r~[Suspect] Fuck the police!" };
+        readonly string[] postActionStatements = { "~r~[Suspect] ~w~Officer, I've done nothing wrong!", "~r~[Suspect] ~w~Fuck the police!" };
         readonly WeaponHash[] weapons = { WeaponHash.Knife, WeaponHash.Pistol, WeaponHash.Machete, WeaponHash.Unarmed, WeaponHash.PumpShotgun};
 
         public SuspiciousPersonCallout()
@@ -45,7 +45,7 @@ namespace SuspiciousPersonCallout
             /* Called when the callout is accepted */
 
             /* Blip spawn happens in base.OnAccept() */
-            this.OnAccept();
+            this.OnAccept(30f, BlipColor.Yellow, BlipSprite.BigCircle, 100);
 
             /* Dispatch notifies player of situation */
             PrintNotification("~g~[Dispatch]: ~w~There are reports of a suspicious person trespassing into an abandoned building");
@@ -89,9 +89,9 @@ namespace SuspiciousPersonCallout
             suspect.Task.TurnTo(Game.PlayerPed);
             await BaseScript.Delay(1000);
 
-            PrintSubtitle("~r~[Suspect] Hey officer", 2000);
+            PrintSubtitle("~r~[Suspect] ~w~Hey officer", 2000);
             await BaseScript.Delay(2000);
-            PrintSubtitle("~r~[Suspect] Why are you stopping me?", 2000);
+            PrintSubtitle("~r~[Suspect] ~w~Why are you stopping me?", 2000);
             await BaseScript.Delay(6000);   // Wait 6 seconds and then do action to give player time to stop ped
 
             int number = rand.Next(101); // random integers between 0 and 100
