@@ -1,9 +1,13 @@
+Dispatch:
+--------------
+- "~g~[Dispatch]: ~w~There are reports of a suspicious person trespassing into an abandoned building" ---> "g~[Dispatch]: ~w~Há denúncias de uma pessoa suspeita invadindo um prédio abandonado"
+
 PostActionStatements:
 -------------------------
-- "Officer, I've done nothing wrong!"  ---> "Olha senhor, eu não fiz nada errado!"
-- "Fuck the police!"  ---> "Foda-se a policia!"
+- "~r~[Suspect] ~w~Officer, I've done nothing wrong!"  ---> "~r~[Suspeito] ~w~Olha senhor, eu não fiz nada errado!"
+- "~r~[Suspect] ~w~Fuck the police!"  ---> "~r~[Suspeito] ~w~Foda-se a policia!"
 
 InitialStatements:
 -------------------
-- "Hey officer"  ---> "Ei oficial"
-- "Why are you stopping me?"  ---> "Por que você está me parando?"
+- "~r~[Suspect] ~w~Hey officer"  ---> "~r~[Suspeito] ~w~Ei oficial"
+- "~r~[Suspect] ~w~Why are you stopping me?"  ---> "~r~[Suspeito] ~w~Por que você está me parando?"
