@@ -1,0 +1,9 @@
+PostActionStatements:
+-------------------------
+- "Officer, I've done nothing wrong!"  ---> "Olha senhor, eu não fiz nada errado!"
+- "Fuck the police!"  ---> "Foda-se a policia!"
+
+InitialStatements:
+-------------------
+- "Hey officer"  ---> "Ei oficial"
+- "Why are you stopping me?"  ---> "Por que você está me parando?"
